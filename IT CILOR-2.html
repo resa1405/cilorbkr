@@ -1,0 +1,1881 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CILOR BKR</title>
+
+<style>
+:root{
+ --bg:#fff6f4;
+ --panel:#ffffff;
+ --soft:#f8e9ec;
+ --primary:#d991a3;
+ --text:#59444b;
+ --muted:#a58d94;
+ --border:#f0dce1;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+ font-family:'Segoe UI',sans-serif;
+ background:var(--bg);
+ color:var(--text);
+ transition:.25s;
+}
+
+button,input,select{font:inherit}
+button{cursor:pointer}
+
+.header{
+ height:62px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:0 18px;
+ background:var(--panel);
+ border-bottom:1px solid var(--border);
+ position:sticky;
+ top:0;
+ z-index:20;
+}
+
+.header-left,.header-right{
+ display:flex;
+ align-items:center;
+ gap:10px;
+}
+
+.menu-button{
+ border:0;
+ background:transparent;
+ color:var(--text);
+ font-size:24px;
+ padding:7px 10px;
+ border-radius:9px;
+}
+
+.logo{
+ font-weight:800;
+ letter-spacing:2px;
+ color:var(--primary);
+ font-size:16px;
+}
+
+.theme-select{
+ max-width:125px;
+ border:1px solid var(--border);
+ background:var(--bg);
+ color:var(--text);
+ padding:7px;
+ border-radius:9px;
+ font-size:11px;
+}
+
+/* MENU SAMPING */
+
+.overlay{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.35);
+ z-index:29;
+}
+
+.overlay.show{display:block}
+
+.drawer{
+ position:fixed;
+ top:0;
+ left:-280px;
+ width:270px;
+ height:100vh;
+ overflow-y:auto;
+ background:var(--panel);
+ z-index:30;
+ padding:20px 15px;
+ transition:.25s;
+}
+
+.drawer.open{left:0}
+
+.drawer-heading{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:8px;
+ margin-bottom:15px;
+ border-bottom:1px solid var(--border);
+}
+
+.drawer-heading h3{
+ color:var(--primary);
+ letter-spacing:2px;
+ font-size:18px;
+}
+
+.close-menu{
+ border:0;
+ background:transparent;
+ color:var(--text);
+ font-size:23px;
+}
+
+.drawer-label{
+ font-size:10px;
+ letter-spacing:2px;
+ color:var(--muted);
+ padding:12px 8px;
+}
+
+.nav{
+ display:block;
+ width:100%;
+ text-align:left;
+ padding:12px;
+ border:0;
+ border-radius:9px;
+ background:transparent;
+ color:var(--text);
+ font-size:13px;
+ margin-bottom:4px;
+}
+
+.nav:hover,.nav.active{
+ background:var(--soft);
+ color:var(--primary);
+ font-weight:700;
+}
+
+/* TAMPILAN */
+
+main{
+ max-width:1100px;
+ margin:auto;
+ padding:20px 18px 40px;
+}
+
+.main-title{
+ text-align:center;
+ padding:15px 0 25px;
+}
+
+.main-title h1{
+ color:var(--primary);
+ font-size:30px;
+ letter-spacing:4px;
+}
+
+.main-title p{
+ font-size:10px;
+ color:var(--muted);
+ letter-spacing:3px;
+ margin-top:7px;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.heading{
+ font-size:19px;
+ margin-bottom:7px;
+}
+
+.description{
+ font-size:12px;
+ color:var(--muted);
+ line-height:1.7;
+ margin-bottom:18px;
+}
+
+.card{
+ background:var(--panel);
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:17px;
+ margin-bottom:15px;
+}
+
+.card h3{
+ font-size:14px;
+ margin-bottom:14px;
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px;
+ margin-bottom:15px;
+}
+
+.stat-label{
+ font-size:11px;
+ color:var(--muted);
+ margin-bottom:9px;
+}
+
+.stat-value{
+ font-size:19px;
+ font-weight:700;
+ overflow-wrap:anywhere;
+}
+
+/* KALENDER */
+
+.calendar-head{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ margin-bottom:14px;
+}
+
+.calendar-head button{
+ border:0;
+ background:var(--soft);
+ color:var(--primary);
+ padding:7px 12px;
+ border-radius:8px;
+}
+
+.calendar-grid{
+ display:grid;
+ grid-template-columns:repeat(7,1fr);
+ gap:5px;
+ text-align:center;
+}
+
+.calendar-grid div{
+ padding:9px 2px;
+ font-size:11px;
+ border-radius:8px;
+}
+
+.day-name{
+ color:var(--muted);
+ font-weight:700;
+}
+
+.day{
+ cursor:pointer;
+ position:relative;
+}
+
+.day:hover{background:var(--soft)}
+.day.today{border:1px solid var(--primary)}
+.day.selected{background:var(--primary);color:white}
+
+.day.has-data:after{
+ content:"";
+ position:absolute;
+ bottom:3px;
+ left:calc(50% - 2px);
+ width:5px;
+ height:5px;
+ border-radius:50%;
+ background:var(--primary);
+}
+
+.day.selected:after{background:white}
+
+.columns{
+ display:grid;
+ grid-template-columns:1.2fr .8fr;
+ gap:14px;
+}
+
+.history{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ padding:11px 0;
+ border-bottom:1px solid var(--border);
+ font-size:12px;
+}
+
+.empty{
+ text-align:center;
+ padding:20px;
+ color:var(--muted);
+ font-size:12px;
+}
+
+/* MOTIVASI */
+
+.quote{
+ background:var(--soft);
+ border-radius:13px;
+ padding:18px;
+ margin-bottom:15px;
+}
+
+.quote small{
+ color:var(--primary);
+ letter-spacing:2px;
+ font-size:10px;
+}
+
+.quote p{
+ font-size:13px;
+ line-height:1.8;
+ font-style:italic;
+ margin-top:10px;
+}
+
+/* FORM */
+
+.form-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:12px;
+}
+
+.field{margin-bottom:13px}
+
+.field label{
+ display:block;
+ font-size:11px;
+ color:var(--muted);
+ margin-bottom:7px;
+}
+
+.field input,.field select{
+ width:100%;
+ padding:11px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ background:var(--bg);
+ color:var(--text);
+ outline:none;
+}
+
+.btn{
+ border:0;
+ background:var(--primary);
+ color:white;
+ padding:10px 15px;
+ border-radius:9px;
+ font-size:11px;
+}
+
+.btn-soft{
+ border:1px solid var(--border);
+ background:var(--soft);
+ color:var(--text);
+ padding:9px 12px;
+ border-radius:9px;
+ font-size:11px;
+}
+
+.btn-danger{
+ border:0;
+ background:#f8e1e3;
+ color:#a94f5d;
+ padding:7px 9px;
+ border-radius:7px;
+ font-size:10px;
+}
+
+.badge{
+ background:var(--soft);
+ padding:5px 8px;
+ border-radius:15px;
+ font-size:10px;
+}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:450px;
+}
+
+.table-wrap{overflow-x:auto}
+
+th,td{
+ padding:11px 8px;
+ text-align:left;
+ border-bottom:1px solid var(--border);
+ font-size:11px;
+}
+
+th{color:var(--muted)}
+
+/* WISHLIST */
+
+.wish-item{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ padding:13px;
+ border:1px solid var(--border);
+ border-radius:10px;
+ margin-bottom:9px;
+ font-size:12px;
+}
+
+.wish-controls{
+ display:flex;
+ gap:4px;
+}
+
+.wish-controls button{
+ border:0;
+ background:var(--soft);
+ color:var(--text);
+ padding:6px 9px;
+ border-radius:6px;
+}
+
+/* KALKULATOR */
+
+.calculator{
+ max-width:340px;
+ margin:auto;
+}
+
+.display{
+ width:100%;
+ padding:20px;
+ text-align:right;
+ font-size:24px;
+ border:0;
+ border-radius:10px;
+ background:var(--soft);
+ color:var(--text);
+ margin-bottom:12px;
+}
+
+.calc-grid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:8px;
+}
+
+.calc-grid button{
+ padding:16px 5px;
+ border:0;
+ border-radius:9px;
+ background:var(--soft);
+ color:var(--text);
+}
+
+.calc-grid .op{
+ background:var(--primary);
+ color:white;
+}
+
+footer{
+ text-align:center;
+ color:var(--muted);
+ font-size:10px;
+ padding:25px;
+}
+
+@media(max-width:800px){
+ .grid{grid-template-columns:repeat(2,1fr)}
+ .columns{grid-template-columns:1fr}
+}
+
+@media(max-width:500px){
+ .header{height:58px;padding:0 9px}
+ .logo{font-size:14px}
+ .header-left,.header-right{gap:4px}
+ .theme-select{max-width:110px;font-size:10px}
+ main{padding:14px 11px 30px}
+ .main-title h1{font-size:25px}
+ .form-grid{grid-template-columns:1fr}
+ .card{padding:14px}
+ .stat-value{font-size:17px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+ <div class="header-left">
+  <button class="menu-button" onclick="toggleMenu()">☰</button>
+  <div class="logo">CILOR BKR</div>
+ </div>
+
+ <div class="header-right">
+  <select class="theme-select" id="themeSelect" onchange="changeTheme(this.value)">
+   <optgroup label="Tema Pastel">
+    <option value="rose">Rose Latte</option>
+    <option value="lavender">Lavender Dream</option>
+    <option value="mint">Mint Breeze</option>
+    <option value="peach">Peach Sorbet</option>
+    <option value="blue">Baby Blue</option>
+   </optgroup>
+   <optgroup label="Tema Gelap">
+    <option value="darkrose">Dark Rose</option>
+    <option value="purple">Midnight Purple</option>
+    <option value="green">Forest Night</option>
+    <option value="darkblue">Ocean Night</option>
+    <option value="brown">Cocoa Night</option>
+   </optgroup>
+  </select>
+ </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<aside class="drawer" id="drawer">
+ <div class="drawer-heading">
+  <h3>CILOR BKR</h3>
+  <button class="close-menu" onclick="toggleMenu()">×</button>
+ </div>
+
+ <div class="drawer-label">MENU UTAMA</div>
+
+ <button class="nav active" onclick="showPage('dashboard',this)">⌂ Dashboard</button>
+ <button class="nav" onclick="showPage('sales',this)">↗ Penjualan</button>
+ <button class="nav" onclick="showPage('expenses',this)">↘ Pengeluaran</button>
+ <button class="nav" onclick="showPage('stock',this)">▤ Stok Barang</button>
+ <button class="nav" onclick="showPage('hpp',this)">♧ HPP & Laba Rugi</button>
+ <button class="nav" onclick="showPage('reports',this)">▥ Laporan Keuangan</button>
+ <button class="nav" onclick="showPage('calculator',this)">＋ Kalkulator</button>
+ <button class="nav" onclick="showPage('wishlist',this)">♡ Wishlist & Budget</button>
+ <button class="nav" onclick="showPage('reminder',this)">◷ Pengingat</button>
+</aside>
+
+<main>
+
+<div class="main-title">
+ <h1>CILOR BKR</h1>
+ <p>PENGELOLAAN KEUANGAN USAHA</p>
+</div>
+
+<!-- DASHBOARD -->
+
+<section class="page active" id="dashboard">
+
+ <div class="quote">
+  <small>✧ MOTIVASI HARI INI</small>
+  <p id="quoteText"></p>
+  <button class="btn" onclick="nextQuote()">Ganti Motivasi ↗</button>
+ </div>
+
+ <div class="card">
+  <h3>✿ Kalender Aktivitas</h3>
+
+  <div class="calendar-head">
+   <button onclick="changeMonth(-1)">←</button>
+   <strong id="monthYear"></strong>
+   <button onclick="changeMonth(1)">→</button>
+  </div>
+
+  <div class="calendar-grid" id="calendar"></div>
+ </div>
+
+ <div class="grid">
+  <div class="card">
+   <div class="stat-label">Penjualan Hari Ini</div>
+   <div class="stat-value" id="todaySales">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Pengeluaran Hari Ini</div>
+   <div class="stat-value" id="todayExpenses">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Laba Bersih Hari Ini</div>
+   <div class="stat-value" id="todayProfit">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Jenis Stok</div>
+   <div class="stat-value" id="stockCount">0</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>♡ Riwayat Tanggal <span id="selectedDate"></span></h3>
+  <div id="dailyHistory"></div>
+ </div>
+
+</section>
+
+<!-- PENJUALAN -->
+
+<section class="page" id="sales">
+ <h3 class="heading">Penjualan</h3>
+ <p class="description">Semua produk dijual dengan harga Rp5.000 per porsi.</p>
+
+ <div class="card">
+  <h3>Tambah Penjualan</h3>
+
+  <form onsubmit="addSale(event)">
+   <div class="form-grid">
+
+    <div class="field">
+     <label>Tanggal</label>
+     <input type="date" id="saleDate" required>
+    </div>
+
+    <div class="field">
+     <label>Produk</label>
+     <select id="saleProduct">
+      <option>Cilor</option>
+      <option>Otak-otak</option>
+      <option>Usus</option>
+     </select>
+    </div>
+
+    <div class="field">
+     <label>Jumlah Terjual</label>
+     <input type="number" id="saleQty" min="1" required>
+    </div>
+
+    <div class="field">
+     <label>Harga Satuan</label>
+     <input value="Rp5.000" readonly>
+    </div>
+
+    <div class="field">
+     <label>Metode Pembayaran</label>
+     <select id="saleMethod">
+      <option>Tunai</option>
+      <option>Transfer</option>
+      <option>QRIS</option>
+     </select>
+    </div>
+
+   </div>
+
+   <div class="card" style="background:var(--soft)">
+    <div class="stat-label">Total Penjualan</div>
+    <div class="stat-value" id="salePreview">Rp0</div>
+   </div>
+
+   <button class="btn">Simpan Penjualan</button>
+  </form>
+ </div>
+
+ <div class="card">
+  <h3>Riwayat Penjualan</h3>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Tanggal</th>
+      <th>Produk</th>
+      <th>Jumlah</th>
+      <th>Total</th>
+      <th>Aksi</th>
+     </tr>
+    </thead>
+    <tbody id="salesTable"></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- PENGELUARAN -->
+
+<section class="page" id="expenses">
+ <h3 class="heading">Pengeluaran</h3>
+ <p class="description">Catat biaya usaha di luar HPP produk.</p>
+
+ <div class="card">
+  <h3>Tambah Pengeluaran</h3>
+
+  <form onsubmit="addExpense(event)">
+   <div class="form-grid">
+
+    <div class="field">
+     <label>Tanggal</label>
+     <input type="date" id="expenseDate" required>
+    </div>
+
+    <div class="field">
+     <label>Kategori</label>
+     <select id="expenseCategory">
+      <option>Transportasi</option>
+      <option>Listrik dan Air</option>
+      <option>Peralatan</option>
+      <option>Sewa Tempat</option>
+      <option>Biaya Lainnya</option>
+     </select>
+    </div>
+
+    <div class="field">
+     <label>Nama Pengeluaran</label>
+     <input id="expenseName" required>
+    </div>
+
+    <div class="field">
+     <label>Jumlah Biaya (Rp)</label>
+     <input type="number" id="expenseAmount" min="1" required>
+    </div>
+
+   </div>
+
+   <button class="btn">Simpan Pengeluaran</button>
+  </form>
+ </div>
+
+ <div class="card">
+  <h3>Riwayat Pengeluaran</h3>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Tanggal</th>
+      <th>Kategori</th>
+      <th>Nama</th>
+      <th>Biaya</th>
+      <th>Aksi</th>
+     </tr>
+    </thead>
+    <tbody id="expensesTable"></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- STOK -->
+
+<section class="page" id="stock">
+ <h3 class="heading">Stok Barang</h3>
+ <p class="description">Kelola persediaan bahan dan barang usaha.</p>
+
+ <div class="card">
+  <h3>Tambah atau Perbarui Stok</h3>
+
+  <form onsubmit="addStock(event)">
+   <div class="form-grid">
+
+    <div class="field">
+     <label>Nama Barang</label>
+     <input id="stockName" required>
+    </div>
+
+    <div class="field">
+     <label>Jumlah Stok</label>
+     <input type="number" id="stockQty" min="0" required>
+    </div>
+
+    <div class="field">
+     <label>Satuan</label>
+     <select id="stockUnit">
+      <option>Pcs</option>
+      <option>Pack</option>
+      <option>Kg</option>
+      <option>Gram</option>
+      <option>Liter</option>
+     </select>
+    </div>
+
+    <div class="field">
+     <label>Batas Minimum</label>
+     <input type="number" id="stockMin" value="5" min="0">
+    </div>
+
+   </div>
+
+   <button class="btn">Simpan Stok</button>
+  </form>
+ </div>
+
+ <div class="card">
+  <h3>Daftar Persediaan</h3>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Barang</th>
+      <th>Jumlah</th>
+      <th>Satuan</th>
+      <th>Status</th>
+      <th>Aksi</th>
+     </tr>
+    </thead>
+    <tbody id="stockTable"></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- HPP DAN LABA RUGI -->
+
+<section class="page" id="hpp">
+
+ <h3 class="heading">HPP & Laba Rugi</h3>
+
+ <p class="description">
+  Masukkan biaya modal satu porsi. Sistem akan menghitung
+  keuntungan secara otomatis dari harga jual Rp5.000.
+ </p>
+
+ <div class="card">
+  <h3>♡ Hitung HPP Satu Porsi</h3>
+
+  <div class="field">
+   <label>Pilih Produk</label>
+   <select id="hppProduct" onchange="showHPPInput()">
+    <option>Cilor</option>
+    <option>Otak-otak</option>
+    <option>Usus</option>
+   </select>
+  </div>
+
+  <div class="card" style="background:var(--soft)">
+   <div class="stat-label">Harga Jual Satu Porsi</div>
+   <div class="stat-value">Rp5.000</div>
+  </div>
+
+  <div class="field">
+   <label>HPP Satu Porsi (Rp)</label>
+   <input type="number" id="hppPrice" min="0" placeholder="Contoh: 2000">
+  </div>
+
+  <button class="btn" onclick="saveHPP()">Simpan HPP</button>
+
+  <div class="card" style="margin-top:15px">
+   <div class="stat-label">Keuntungan Kotor Satu Porsi</div>
+   <div class="stat-value" id="hppPerPortion">Rp0</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>Daftar HPP Produk</h3>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Produk</th>
+      <th>Harga Jual</th>
+      <th>HPP Satuan</th>
+      <th>Laba Satuan</th>
+     </tr>
+    </thead>
+    <tbody id="hppTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="grid">
+  <div class="card">
+   <div class="stat-label">Total Penjualan</div>
+   <div class="stat-value" id="hppIncome">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Total HPP</div>
+   <div class="stat-value" id="hppTotal">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Laba Kotor</div>
+   <div class="stat-value" id="hppGross">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Laba Bersih</div>
+   <div class="stat-value" id="hppNet">Rp0</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>Rincian Laba Rugi</h3>
+  <div id="hppSummary"></div>
+ </div>
+
+</section>
+
+<!-- LAPORAN -->
+
+<section class="page" id="reports">
+ <h3 class="heading">Laporan Keuangan</h3>
+ <p class="description">Lihat hasil keuangan berdasarkan periode.</p>
+
+ <div class="card">
+  <div class="form-grid">
+   <div class="field">
+    <label>Dari Tanggal</label>
+    <input type="date" id="reportStart" onchange="renderReports()">
+   </div>
+
+   <div class="field">
+    <label>Sampai Tanggal</label>
+    <input type="date" id="reportEnd" onchange="renderReports()">
+   </div>
+  </div>
+ </div>
+
+ <div class="grid">
+  <div class="card">
+   <div class="stat-label">Penjualan</div>
+   <div class="stat-value" id="reportIncome">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Total HPP</div>
+   <div class="stat-value" id="reportHPP">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Laba Kotor</div>
+   <div class="stat-value" id="reportGross">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Laba Bersih</div>
+   <div class="stat-value" id="reportNet">Rp0</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>Rincian Laporan</h3>
+  <div id="reportTable"></div>
+  <button class="btn" onclick="exportCSV()">Unduh Laporan CSV</button>
+ </div>
+</section>
+
+<!-- KALKULATOR -->
+
+<section class="page" id="calculator">
+ <h3 class="heading">Kalkulator</h3>
+ <p class="description">Kalkulator sederhana untuk kebutuhan usaha.</p>
+
+ <div class="card calculator">
+  <input class="display" id="calcDisplay" readonly value="0">
+
+  <div class="calc-grid">
+   <button onclick="calcClear()">AC</button>
+   <button onclick="calcDelete()">⌫</button>
+   <button onclick="calcAdd('%')">%</button>
+   <button class="op" onclick="calcAdd('/')">÷</button>
+
+   <button onclick="calcAdd('7')">7</button>
+   <button onclick="calcAdd('8')">8</button>
+   <button onclick="calcAdd('9')">9</button>
+   <button class="op" onclick="calcAdd('*')">×</button>
+
+   <button onclick="calcAdd('4')">4</button>
+   <button onclick="calcAdd('5')">5</button>
+   <button onclick="calcAdd('6')">6</button>
+   <button class="op" onclick="calcAdd('-')">−</button>
+
+   <button onclick="calcAdd('1')">1</button>
+   <button onclick="calcAdd('2')">2</button>
+   <button onclick="calcAdd('3')">3</button>
+   <button class="op" onclick="calcAdd('+')">+</button>
+
+   <button onclick="calcAdd('0')">0</button>
+   <button onclick="calcAdd('00')">00</button>
+   <button onclick="calcAdd('.')">.</button>
+   <button class="op" onclick="calcResult()">=</button>
+  </div>
+ </div>
+</section>
+
+<!-- WISHLIST -->
+
+<section class="page" id="wishlist">
+ <h3 class="heading">Wishlist & Budget</h3>
+ <p class="description">Rencanakan kebutuhan usaha sesuai prioritas.</p>
+
+ <div class="grid">
+  <div class="card">
+   <div class="stat-label">Total Budget</div>
+   <div class="stat-value" id="totalBudget">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Jumlah Wishlist</div>
+   <div class="stat-value" id="totalWish">0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Total Kebutuhan</div>
+   <div class="stat-value" id="wishCost">Rp0</div>
+  </div>
+
+  <div class="card">
+   <div class="stat-label">Sisa Budget</div>
+   <div class="stat-value" id="remainingBudget">Rp0</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>Atur Budget</h3>
+  <div class="field">
+   <label>Jumlah Budget (Rp)</label>
+   <input type="number" id="budgetInput" min="0">
+  </div>
+  <button class="btn" onclick="saveBudget()">Simpan Budget</button>
+ </div>
+
+ <div class="card">
+  <h3>Tambah Wishlist</h3>
+
+  <form onsubmit="addWish(event)">
+   <div class="form-grid">
+
+    <div class="field">
+     <label>Nama Kebutuhan</label>
+     <input id="wishName" required>
+    </div>
+
+    <div class="field">
+     <label>Estimasi Harga (Rp)</label>
+     <input type="number" id="wishPrice" min="0" required>
+    </div>
+
+    <div class="field">
+     <label>Prioritas</label>
+     <select id="wishPriority">
+      <option value="1">1 - Sangat Penting</option>
+      <option value="2">2 - Penting</option>
+      <option value="3">3 - Cukup Penting</option>
+      <option value="4">4 - Tidak Mendesak</option>
+     </select>
+    </div>
+
+    <div class="field">
+     <label>Target Tanggal</label>
+     <input type="date" id="wishDate">
+    </div>
+
+   </div>
+
+   <button class="btn">Tambah Wishlist</button>
+  </form>
+ </div>
+
+ <div class="card">
+  <h3>Daftar Prioritas</h3>
+  <div id="wishList"></div>
+ </div>
+</section>
+
+<!-- PENGINGAT -->
+
+<section class="page" id="reminder">
+ <h3 class="heading">Pengingat Harian</h3>
+ <p class="description">Atur waktu untuk mencatat keuangan setiap hari.</p>
+
+ <div class="card">
+  <h3>♡ Pengingat CILOR BKR</h3>
+
+  <div class="field">
+   <label>Waktu Pengingat</label>
+   <input type="time" id="alarmTime" value="20:00">
+  </div>
+
+  <div class="field">
+   <label>Status</label>
+   <select id="alarmStatus">
+    <option value="on">Aktif</option>
+    <option value="off">Nonaktif</option>
+   </select>
+  </div>
+
+  <button class="btn" onclick="saveAlarm()">Simpan Pengingat</button>
+  <button class="btn-soft" onclick="testAlarm()">Tes Pengingat</button>
+
+  <p id="alarmInfo" style="font-size:11px;color:var(--muted);margin-top:15px"></p>
+ </div>
+
+ <div class="quote">
+  <small>✧ PESAN HARI INI</small>
+  <p>Usaha yang berkembang membutuhkan kerja keras dan kebiasaan mengelola keuangan dengan baik.</p>
+ </div>
+</section>
+
+<footer>CILOR BKR · Pengelolaan Keuangan Usaha</footer>
+
+</main>
+
+<script>
+
+/* PENYIMPANAN */
+
+function load(key,fallback){
+ try{
+  return JSON.parse(localStorage.getItem(key)) ?? fallback;
+ }catch{
+  return fallback;
+ }
+}
+
+function save(key,value){
+ localStorage.setItem(key,JSON.stringify(value));
+}
+
+let sales=load('bkr_sales',[]);
+let expenses=load('bkr_expenses',[]);
+let stocks=load('bkr_stocks',[]);
+let wishes=load('bkr_wishes',[]);
+let budget=load('bkr_budget',0);
+
+let hppCosts=load('bkr_hpp',{
+ Cilor:0,
+ 'Otak-otak':0,
+ Usus:0
+});
+
+const PRICE=5000;
+const $=id=>document.getElementById(id);
+
+function rupiah(n){
+ return 'Rp'+Number(n||0).toLocaleString('id-ID');
+}
+
+function dateNow(){
+ const d=new Date();
+ return d.getFullYear()+'-'+
+ String(d.getMonth()+1).padStart(2,'0')+'-'+
+ String(d.getDate()).padStart(2,'0');
+}
+
+function safe(s){
+ return String(s??'').replace(/[&<>"']/g,c=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
+ }[c]));
+}
+
+function persist(){
+ save('bkr_sales',sales);
+ save('bkr_expenses',expenses);
+ save('bkr_stocks',stocks);
+ save('bkr_wishes',wishes);
+ save('bkr_budget',budget);
+ save('bkr_hpp',hppCosts);
+}
+
+/* MENU */
+
+function toggleMenu(){
+ $('drawer').classList.toggle('open');
+ $('overlay').classList.toggle('show');
+}
+
+function showPage(id,button){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ $(id).classList.add('active');
+
+ document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));
+ if(button)button.classList.add('active');
+
+ $('drawer').classList.remove('open');
+ $('overlay').classList.remove('show');
+
+ renderAll();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* TEMA */
+
+const themes={
+ rose:['#fff6f4','#ffffff','#f8e9ec','#d991a3','#59444b','#a58d94','#f0dce1'],
+ lavender:['#f6f2ff','#ffffff','#eee7ff','#a995d6','#514568','#968aa9','#e6def5'],
+ mint:['#effaf5','#ffffff','#e2f4eb','#80bda2','#395b4b','#819b8d','#d9eee3'],
+ peach:['#fff6ed','#ffffff','#ffeadb','#e8a477','#654a3c','#a18a7c','#f3e0d2'],
+ blue:['#eff7ff','#ffffff','#e2efff','#83addb','#405775','#8799ae','#dce8f6'],
+ darkrose:['#211a20','#30242d','#49313f','#dc91b3','#f6e9ef','#c0a7b5','#493442'],
+ purple:['#1d192b','#2c253d','#403351','#b49be4','#f1eafd','#b7a9ca','#463955'],
+ green:['#18251f','#25372e','#344a3d','#8fc7a3','#e2f3e8','#a4bcae','#3a5143'],
+ darkblue:['#17212d','#243346','#32465d','#8bbce8','#e3effc','#a5b8cd','#3a4e63'],
+ brown:['#281f1a','#382b23','#4c392e','#d5a77d','#f5e9df','#c0aa99','#594435']
+};
+
+function changeTheme(name){
+ const t=themes[name];
+ if(!t)return;
+
+ const keys=['--bg','--panel','--soft','--primary','--text','--muted','--border'];
+
+ keys.forEach((k,i)=>{
+  document.documentElement.style.setProperty(k,t[i]);
+ });
+
+ save('bkr_theme',name);
+}
+
+/* MOTIVASI */
+
+const quotes=[
+"Jangan takut memulai dari kecil. Setiap usaha besar selalu berawal dari langkah sederhana.",
+"Kesuksesan bukan tentang seberapa cepat kamu sampai, tetapi seberapa kuat kamu bertahan.",
+"Jangan menyerah hanya karena hari ini terasa sulit. Besok masih ada kesempatan untuk mencoba.",
+"Bangun usahamu dengan kesabaran, kelola dengan ketelitian, dan kembangkan dengan keberanian.",
+"Setiap rupiah yang kamu kelola hari ini adalah bagian dari masa depan yang sedang kamu bangun.",
+"Tidak perlu menunggu sempurna untuk memulai. Mulailah, lalu perbaiki setiap prosesnya.",
+"Usaha kecil yang dikelola dengan serius dapat tumbuh menjadi sesuatu yang luar biasa.",
+"Kegagalan bukan akhir perjalanan, melainkan pelajaran untuk mengambil langkah yang lebih baik.",
+"Disiplin hari ini adalah hadiah terbaik untuk dirimu di masa depan.",
+"Jangan membandingkan prosesmu dengan orang lain. Fokuslah pada perkembangan usahamu sendiri.",
+"Keberhasilan membutuhkan usaha, doa, kesabaran, serta konsistensi.",
+"Bekerjalah bukan hanya untuk hari ini, tetapi juga untuk kehidupan yang ingin kamu wujudkan.",
+"Tidak semua hari menghasilkan keuntungan besar. Namun, setiap hari selalu bisa memberikan pelajaran.",
+"Jadikan tantangan sebagai alasan untuk berkembang, bukan alasan untuk berhenti.",
+"Mimpi yang besar membutuhkan keberanian untuk memulai dan ketekunan untuk menjalaninya.",
+"Catat setiap pemasukan dan pengeluaran. Kebiasaan sederhana dapat membawa perubahan besar.",
+"Jangan meremehkan langkah kecil. Kemajuan tetaplah kemajuan, sekecil apa pun bentuknya.",
+"Tetaplah berusaha meski hasil belum terlihat. Proses yang baik membutuhkan waktu.",
+"Masa depan yang baik dibangun dari keputusan bijak yang kamu ambil hari ini.",
+"Terus belajar, terus berkembang, dan jangan pernah berhenti memperjuangkan masa depanmu."
+];
+
+let quoteIndex=0;
+$('quoteText').textContent=quotes[0];
+
+function nextQuote(){
+ quoteIndex=(quoteIndex+1)%quotes.length;
+ $('quoteText').textContent=quotes[quoteIndex];
+}
+
+/* PENJUALAN */
+
+function addSale(e){
+ e.preventDefault();
+
+ const qty=Number($('saleQty').value);
+ const product=$('saleProduct').value;
+ const unitHPP=Number(hppCosts[product]||0);
+
+ sales.push({
+  id:Date.now(),
+  date:$('saleDate').value,
+  product,
+  qty,
+  price:PRICE,
+  total:qty*PRICE,
+  method:$('saleMethod').value,
+
+  // HPP tersimpan sesuai biaya saat transaksi
+  hppUnit:unitHPP,
+  hppTotal:qty*unitHPP
+ });
+
+ persist();
+ e.target.reset();
+
+ $('saleDate').value=dateNow();
+ $('salePreview').textContent='Rp0';
+
+ renderAll();
+
+ alert('Penjualan berhasil disimpan.');
+}
+
+function renderSales(){
+ $('salesTable').innerHTML=sales.slice().reverse().map(s=>`
+ <tr>
+  <td>${safe(s.date)}</td>
+  <td>${safe(s.product)}</td>
+  <td>${s.qty}</td>
+  <td>${rupiah(s.total)}</td>
+  <td>
+   <button class="btn-danger" onclick="deleteItem('sales',${s.id})">Hapus</button>
+  </td>
+ </tr>
+ `).join('')||
+ '<tr><td colspan="5" class="empty">Belum ada penjualan.</td></tr>';
+}
+
+/* PENGELUARAN */
+
+function addExpense(e){
+ e.preventDefault();
+
+ expenses.push({
+  id:Date.now(),
+  date:$('expenseDate').value,
+  category:$('expenseCategory').value,
+  name:$('expenseName').value,
+  amount:Number($('expenseAmount').value)
+ });
+
+ persist();
+ e.target.reset();
+ $('expenseDate').value=dateNow();
+
+ renderAll();
+ alert('Pengeluaran berhasil disimpan.');
+}
+
+function renderExpenses(){
+ $('expensesTable').innerHTML=expenses.slice().reverse().map(x=>`
+ <tr>
+  <td>${safe(x.date)}</td>
+  <td>${safe(x.category)}</td>
+  <td>${safe(x.name)}</td>
+  <td>${rupiah(x.amount)}</td>
+  <td>
+   <button class="btn-danger" onclick="deleteItem('expenses',${x.id})">Hapus</button>
+  </td>
+ </tr>
+ `).join('')||
+ '<tr><td colspan="5" class="empty">Belum ada pengeluaran.</td></tr>';
+}
+
+/* STOK */
+
+function addStock(e){
+ e.preventDefault();
+
+ const name=$('stockName').value.trim();
+ const old=stocks.find(s=>s.name.toLowerCase()===name.toLowerCase());
+
+ if(old){
+  old.qty=Number($('stockQty').value);
+  old.unit=$('stockUnit').value;
+  old.min=Number($('stockMin').value);
+ }else{
+  stocks.push({
+   id:Date.now(),
+   name,
+   qty:Number($('stockQty').value),
+   unit:$('stockUnit').value,
+   min:Number($('stockMin').value)
+  });
+ }
+
+ persist();
+ e.target.reset();
+ renderAll();
+
+ alert('Stok berhasil disimpan.');
+}
+
+function renderStocks(){
+ $('stockTable').innerHTML=stocks.map(s=>`
+ <tr>
+  <td>${safe(s.name)}</td>
+  <td>${s.qty}</td>
+  <td>${safe(s.unit)}</td>
+  <td><span class="badge">${s.qty<=s.min?'Stok menipis':'Tersedia'}</span></td>
+  <td>
+   <button class="btn-soft" onclick="editStock(${s.id})">Edit</button>
+   <button class="btn-danger" onclick="deleteItem('stocks',${s.id})">Hapus</button>
+  </td>
+ </tr>
+ `).join('')||
+ '<tr><td colspan="5" class="empty">Belum ada stok.</td></tr>';
+}
+
+function editStock(id){
+ const s=stocks.find(x=>x.id===id);
+ if(!s)return;
+
+ $('stockName').value=s.name;
+ $('stockQty').value=s.qty;
+ $('stockUnit').value=s.unit;
+ $('stockMin').value=s.min;
+
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* HPP */
+
+function showHPPInput(){
+ const product=$('hppProduct').value;
+ $('hppPrice').value=hppCosts[product]||'';
+ updateHPPPreview();
+}
+
+function updateHPPPreview(){
+ const price=Number($('hppPrice').value||0);
+ $('hppPerPortion').textContent=rupiah(PRICE-price);
+}
+
+$('hppPrice').addEventListener('input',updateHPPPreview);
+
+function saveHPP(){
+ const product=$('hppProduct').value;
+ const price=Number($('hppPrice').value);
+
+ if(price<0||!Number.isFinite(price)){
+  alert('Masukkan HPP yang benar.');
+  return;
+ }
+
+ if(price>PRICE){
+  if(!confirm('HPP lebih besar dari harga jual Rp5.000. Produk ini akan mengalami kerugian. Lanjutkan?')){
+   return;
+  }
+ }
+
+ hppCosts[product]=price;
+
+ persist();
+ renderAll();
+ showHPPInput();
+
+ alert('HPP berhasil disimpan.');
+}
+
+function calculateHPP(sale){
+ if(sale.hppTotal!==undefined){
+  return Number(sale.hppTotal);
+ }
+
+ return Number(sale.qty)*Number(hppCosts[sale.product]||0);
+}
+
+function renderHPP(){
+ const income=sales.reduce((a,b)=>a+b.total,0);
+ const totalHPP=sales.reduce((a,b)=>a+calculateHPP(b),0);
+ const totalExpense=expenses.reduce((a,b)=>a+b.amount,0);
+
+ const grossProfit=income-totalHPP;
+ const netProfit=grossProfit-totalExpense;
+
+ $('hppIncome').textContent=rupiah(income);
+ $('hppTotal').textContent=rupiah(totalHPP);
+ $('hppGross').textContent=rupiah(grossProfit);
+ $('hppNet').textContent=rupiah(netProfit);
+
+ $('hppTable').innerHTML=[
+  'Cilor','Otak-otak','Usus'
+ ].map(product=>{
+  const cost=Number(hppCosts[product]||0);
+  return `
+   <tr>
+    <td>${product}</td>
+    <td>${rupiah(PRICE)}</td>
+    <td>${rupiah(cost)}</td>
+    <td>${rupiah(PRICE-cost)}</td>
+   </tr>
+  `;
+ }).join('');
+
+ $('hppSummary').innerHTML=`
+  <div class="history">
+   <span>Total Penjualan</span>
+   <strong>${rupiah(income)}</strong>
+  </div>
+
+  <div class="history">
+   <span>Total HPP</span>
+   <strong>${rupiah(totalHPP)}</strong>
+  </div>
+
+  <div class="history">
+   <span>Laba Kotor</span>
+   <strong>${rupiah(grossProfit)}</strong>
+  </div>
+
+  <div class="history">
+   <span>Pengeluaran Operasional</span>
+   <strong>${rupiah(totalExpense)}</strong>
+  </div>
+
+  <div class="history">
+   <span><strong>Laba Bersih</strong></span>
+   <strong>${rupiah(netProfit)}</strong>
+  </div>
+ `;
+}
+
+/* KALENDER */
+
+let currentMonth=new Date();
+let selectedDate=dateNow();
+
+function renderCalendar(){
+ const y=currentMonth.getFullYear();
+ const m=currentMonth.getMonth();
+
+ $('monthYear').textContent=new Date(y,m,1).toLocaleDateString('id-ID',{
+  month:'long',year:'numeric'
+ });
+
+ const first=new Date(y,m,1).getDay();
+ const days=new Date(y,m+1,0).getDate();
+
+ const names=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
+ let html=names.map(n=>`<div class="day-name">${n}</div>`).join('');
+
+ for(let i=0;i<first;i++)html+='<div></div>';
+
+ for(let d=1;d<=days;d++){
+  const date=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+
+  const has=sales.some(s=>s.date===date)||
+   expenses.some(x=>x.date===date);
+
+  let cls='day';
+
+  if(date===dateNow())cls+=' today';
+  if(date===selectedDate)cls+=' selected';
+  if(has)cls+=' has-data';
+
+  html+=`<div class="${cls}" onclick="selectDate('${date}')">${d}</div>`;
+ }
+
+ $('calendar').innerHTML=html;
+}
+
+function changeMonth(n){
+ currentMonth.setMonth(currentMonth.getMonth()+n);
+ renderCalendar();
+}
+
+function selectDate(date){
+ selectedDate=date;
+ renderCalendar();
+ renderHistory();
+}
+
+function renderHistory(){
+ $('selectedDate').textContent=new Date(selectedDate+'T12:00:00').toLocaleDateString('id-ID');
+
+ const s=sales.filter(x=>x.date===selectedDate);
+ const ex=expenses.filter(x=>x.date===selectedDate);
+
+ let html='';
+
+ s.forEach(x=>{
+  html+=`
+   <div class="history">
+    <span>Penjualan ${safe(x.product)} (${x.qty})</span>
+    <strong>${rupiah(x.total)}</strong>
+   </div>
+  `;
+ });
+
+ ex.forEach(x=>{
+  html+=`
+   <div class="history">
+    <span>Pengeluaran ${safe(x.name)}</span>
+    <strong>${rupiah(x.amount)}</strong>
+   </div>
+  `;
+ });
+
+ $('dailyHistory').innerHTML=html||
+ '<div class="empty">Belum ada aktivitas pada tanggal ini.</div>';
+}
+
+/* DASHBOARD */
+
+function renderDashboard(){
+ const date=dateNow();
+
+ const income=sales.filter(s=>s.date===date)
+  .reduce((a,b)=>a+b.total,0);
+
+ const hpp=sales.filter(s=>s.date===date)
+  .reduce((a,b)=>a+calculateHPP(b),0);
+
+ const cost=expenses.filter(x=>x.date===date)
+  .reduce((a,b)=>a+b.amount,0);
+
+ $('todaySales').textContent=rupiah(income);
+ $('todayExpenses').textContent=rupiah(cost);
+ $('todayProfit').textContent=rupiah(income-hpp-cost);
+ $('stockCount').textContent=stocks.length;
+
+ renderCalendar();
+ renderHistory();
+}
+
+/* LAPORAN */
+
+function renderReports(){
+ const start=$('reportStart').value;
+ const end=$('reportEnd').value;
+
+ const s=sales.filter(x=>
+  (!start||x.date>=start)&&(!end||x.date<=end)
+ );
+
+ const ex=expenses.filter(x=>
+  (!start||x.date>=start)&&(!end||x.date<=end)
+ );
+
+ const income=s.reduce((a,b)=>a+b.total,0);
+ const totalHPP=s.reduce((a,b)=>a+calculateHPP(b),0);
+ const cost=ex.reduce((a,b)=>a+b.amount,0);
+
+ const grossProfit=income-totalHPP;
+ const netProfit=grossProfit-cost;
+
+ $('reportIncome').textContent=rupiah(income);
+ $('reportHPP').textContent=rupiah(totalHPP);
+ $('reportGross').textContent=rupiah(grossProfit);
+ $('reportNet').textContent=rupiah(netProfit);
+
+ $('reportTable').innerHTML=`
+  <div class="history"><span>Total Penjualan</span><strong>${rupiah(income)}</strong></div>
+  <div class="history"><span>Total HPP</span><strong>${rupiah(totalHPP)}</strong></div>
+  <div class="history"><span>Laba Kotor</span><strong>${rupiah(grossProfit)}</strong></div>
+  <div class="history"><span>Pengeluaran Operasional</span><strong>${rupiah(cost)}</strong></div>
+  <div class="history"><span><strong>Laba Bersih</strong></span><strong>${rupiah(netProfit)}</strong></div>
+ `;
+}
+
+/* WISHLIST */
+
+function saveBudget(){
+ budget=Number($('budgetInput').value||0);
+ persist();
+ renderWishlist();
+ alert('Budget berhasil disimpan.');
+}
+
+function addWish(e){
+ e.preventDefault();
+
+ wishes.push({
+  id:Date.now(),
+  name:$('wishName').value,
+  price:Number($('wishPrice').value),
+  priority:Number($('wishPriority').value),
+  date:$('wishDate').value
+ });
+
+ persist();
+ e.target.reset();
+ renderWishlist();
+}
+
+function renderWishlist(){
+ const total=wishes.reduce((a,b)=>a+b.price,0);
+
+ $('totalBudget').textContent=rupiah(budget);
+ $('totalWish').textContent=wishes.length;
+ $('wishCost').textContent=rupiah(total);
+ $('remainingBudget').textContent=rupiah(budget-total);
+ $('budgetInput').value=budget||'';
+
+ $('wishList').innerHTML=wishes.map((w,i)=>`
+  <div class="wish-item">
+   <div style="flex:1">
+    <strong>${i+1}. ${safe(w.name)}</strong>
+    <div style="color:var(--muted);margin-top:5px">
+     ${rupiah(w.price)} · Prioritas ${w.priority}
+     ${w.date?' · '+safe(w.date):''}
+    </div>
+   </div>
+
+   <div class="wish-controls">
+    <button onclick="moveWish(${i},-1)">↑</button>
+    <button onclick="moveWish(${i},1)">↓</button>
+    <button onclick="deleteItem('wishes',${w.id})">×</button>
+   </div>
+  </div>
+ `).join('')||'<div class="empty">Belum ada wishlist.</div>';
+}
+
+function moveWish(i,d){
+ const j=i+d;
+ if(j<0||j>=wishes.length)return;
+
+ [wishes[i],wishes[j]]=[wishes[j],wishes[i]];
+
+ persist();
+ renderWishlist();
+}
+
+/* HAPUS DATA */
+
+function deleteItem(type,id){
+ if(!confirm('Hapus data ini?'))return;
+
+ if(type==='sales')sales=sales.filter(x=>x.id!==id);
+ if(type==='expenses')expenses=expenses.filter(x=>x.id!==id);
+ if(type==='stocks')stocks=stocks.filter(x=>x.id!==id);
+ if(type==='wishes')wishes=wishes.filter(x=>x.id!==id);
+
+ persist();
+ renderAll();
+}
+
+/* KALKULATOR */
+
+let expression='';
+
+function calcAdd(v){
+ expression+=v;
+ $('calcDisplay').value=expression;
+}
+
+function calcClear(){
+ expression='';
+ $('calcDisplay').value='0';
+}
+
+function calcDelete(){
+ expression=expression.slice(0,-1);
+ $('calcDisplay').value=expression||'0';
+}
+
+function calcResult(){
+ try{
+  if(!/^[0-9+\-*/%.() ]+$/.test(expression)||!expression)throw Error();
+
+  const result=Function('"use strict";return ('+expression+')')();
+
+  if(!Number.isFinite(result))throw Error();
+
+  expression=String(Number(result.toFixed(8)));
+  $('calcDisplay').value=expression;
+ }catch{
+  expression='';
+  $('calcDisplay').value='Error';
+ }
+}
+
+/* UNDUH LAPORAN */
+
+function exportCSV(){
+ const rows=[
+  ['Tanggal','Jenis','Keterangan','Jumlah'],
+  ...sales.map(x=>[x.date,'Penjualan',x.product,x.total]),
+  ...expenses.map(x=>[x.date,'Pengeluaran',x.name,x.amount])
+ ];
+
+ const csv=rows.map(r=>
+  r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')
+ ).join('\n');
+
+ const blob=new Blob(['\ufeff'+csv],{
+  type:'text/csv;charset=utf-8'
+ });
+
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+
+ a.href=url;
+ a.download='Laporan-CILOR-BKR.csv';
+ a.click();
+
+ URL.revokeObjectURL(url);
+}
+
+/* PENGINGAT */
+
+let alarm=load('bkr_alarm',{time:'20:00',status:'on'});
+let lastAlarm='';
+
+function updateAlarm(){
+ $('alarmTime').value=alarm.time;
+ $('alarmStatus').value=alarm.status;
+
+ $('alarmInfo').textContent=alarm.status==='on'
+  ?'Pengingat aktif setiap hari pukul '+alarm.time
+  :'Pengingat sedang dinonaktifkan.';
+}
+
+async function saveAlarm(){
+ alarm={
+  time:$('alarmTime').value,
+  status:$('alarmStatus').value
+ };
+
+ save('bkr_alarm',alarm);
+
+ if(alarm.status==='on'&&'Notification'in window&&Notification.permission==='default'){
+  await Notification.requestPermission();
+ }
+
+ updateAlarm();
+ alert('Pengaturan pengingat disimpan.');
+}
+
+function testAlarm(){
+ ringAlarm();
+}
+
+function ringAlarm(){
+ if('Notification'in window&&Notification.permission==='granted'){
+  new Notification('CILOR BKR',{
+   body:'Waktunya mencatat penjualan, pengeluaran, dan stok hari ini!'
+  });
+ }
+
+ alert('CILOR BKR\n\nWaktunya mencatat keuangan usaha hari ini!');
+
+ try{
+  const ctx=new AudioContext();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.frequency.value=880;
+  gain.gain.value=.15;
+
+  osc.start();
+  osc.stop(ctx.currentTime+1);
+ }catch{}
+}
+
+function checkAlarm(){
+ if(alarm.status!=='on')return;
+
+ const d=new Date();
+ const date=dateNow();
+
+ const time=String(d.getHours()).padStart(2,'0')+':'+
+ String(d.getMinutes()).padStart(2,'0');
+
+ if(time===alarm.time&&lastAlarm!==date){
+  lastAlarm=date;
+  ringAlarm();
+ }
+}
+
+/* TAMPILAN */
+
+function renderAll(){
+ renderDashboard();
+ renderSales();
+ renderExpenses();
+ renderStocks();
+ renderHPP();
+ renderReports();
+ renderWishlist();
+}
+
+/* MULAI */
+
+function initialize(){
+ const date=dateNow();
+
+ $('saleDate').value=date;
+ $('expenseDate').value=date;
+
+ $('reportStart').value=date.slice(0,8)+'01';
+ $('reportEnd').value=date;
+
+ const theme=load('bkr_theme','rose');
+ $('themeSelect').value=theme;
+ changeTheme(theme);
+
+ updateAlarm();
+ showHPPInput();
+ renderAll();
+
+ $('saleQty').addEventListener('input',()=>{
+  const qty=Number($('saleQty').value||0);
+  $('salePreview').textContent=rupiah(qty*PRICE);
+ });
+
+ setInterval(checkAlarm,1000);
+}
+
+initialize();
+
+</script>
+</body>
+</html>
